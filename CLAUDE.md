@@ -367,6 +367,9 @@ The AI assistant adapts its response format to the query:
 **Method**: Simple password authentication (personal use)
 
 **Admin Password**: `admin1002`
+> ⚠️ **DEMO PASSWORD FOR LOCAL TESTING ONLY**
+> Change this password before deploying to production!
+> This is a placeholder for development and testing purposes.
 
 **Implementation**:
 - Streamlit: Session state with password check on login page

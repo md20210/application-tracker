@@ -273,6 +273,21 @@ Dieses Projekt nutzt bewährte Patterns aus:
 - [ ] Statistik-Dashboard mit Charts
 - [ ] Mobile App
 
+## Security
+
+⚠️ **Demo Credentials:** Die Spezifikation (CLAUDE.md) enthält Demo-Passwörter für lokale Tests.
+Diese sind **NUR für lokale Entwicklung** gedacht.
+
+**Bei Production Deployment:**
+1. Ändere alle Passwörter in Umgebungsvariablen
+2. Nutze Railway Secrets für API Keys
+3. Aktiviere HTTPS und sichere Cookies
+4. Setze starke, zufällige Passwörter
+
+**Passwort-Änderung:**
+Die aktuelle Implementation (General Backend) nutzt `fastapi-users` mit JWT Authentication.
+Demo-Passwörter aus CLAUDE.md sind veraltet und gelten nur für die ursprüngliche Streamlit-Version.
+
 ## Lizenz
 
 Privates Projekt - Alle Rechte vorbehalten

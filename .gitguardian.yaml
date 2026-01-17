@@ -1,0 +1,13 @@
+# GitGuardian Configuration
+# https://docs.gitguardian.com/internal-repositories-monitoring/integrations/git_hooks/pre_commit
+
+version: 2
+
+# Paths to ignore
+paths-ignore:
+  - "**/*.md"  # Ignore markdown files (contain demo passwords for documentation)
+
+# Specific secrets to ignore
+matches-ignore:
+  - name: Demo password in CLAUDE.md
+    match: admin1002
