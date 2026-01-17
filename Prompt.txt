@@ -1,0 +1,4 @@
+Vorhanden Funktionen aus den verschiedenmen Showcases uebernehmen, siehe Doku
+E:\CodelocalLLM\docs>
+
+App Verzeichnis ist: E:\CodelocalLLM\applicationtracker>
