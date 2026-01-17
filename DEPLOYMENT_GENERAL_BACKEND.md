@@ -1,5 +1,9 @@
 # Application Tracker - General Backend Integration Deployment
 
+**Repositories:**
+- Frontend: https://github.com/md20210/application-tracker
+- Backend: https://github.com/md20210/general-backend (integriert)
+
 ## Architektur
 
 ```
@@ -258,7 +262,17 @@ interface ImportMeta {
 ## Status
 
 ✅ **DEPLOYMENT ERFOLGREICH**
-- Backend: Live on Railway
-- Frontend: Live on Strato
+- Backend: Live on Railway (https://github.com/md20210/general-backend)
+- Frontend: Live on Strato (https://github.com/md20210/application-tracker)
 - Integration: Funktioniert
 - Datum: 2026-01-17
+- Test Results: Alle 14 Tests bestanden
+
+## Links
+
+- **Frontend Repository:** https://github.com/md20210/application-tracker
+- **Backend Repository:** https://github.com/md20210/general-backend
+- **Live Frontend:** https://www.dabrock.info/applicationtracker/
+- **API Docs:** https://general-backend-production-a734.up.railway.app/docs
+- **Test Scripts:** /mnt/e/CodelocalLLM/tests/
+- **Dokumentation:** /mnt/e/CodelocalLLM/docs/APPLICATION_TRACKER.md

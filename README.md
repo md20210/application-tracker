@@ -2,6 +2,10 @@
 
 Ein intelligentes Bewerbungsmanagementsystem mit RAG-unterstütztem Chat und dynamischen Reports.
 
+**🌐 Live Demo:** https://www.dabrock.info/applicationtracker/
+**📦 GitHub:** https://github.com/md20210/application-tracker
+**🔧 Backend:** https://github.com/md20210/general-backend (integriert)
+
 ## Features
 
 ✅ **Verzeichnis-Upload**: ZIP-Dateien mit allen Bewerbungsunterlagen hochladen
@@ -13,14 +17,35 @@ Ein intelligentes Bewerbungsmanagementsystem mit RAG-unterstütztem Chat und dyn
 ✅ **Löschfunktion**: Bewerbungen komplett entfernen (DB + Vektor-DB)
 ✅ **Multi-LLM**: Ollama (lokal), Grok, Claude
 
+## Architektur
+
+⚠️ **WICHTIG:** Das Backend ist im [General Backend](https://github.com/md20210/general-backend) integriert, NICHT in diesem Repository!
+
+```
+┌─────────────────────────────────┐
+│  Frontend (dieses Repo)         │
+│  https://www.dabrock.info/      │
+│  /applicationtracker/           │
+└────────────┬────────────────────┘
+             │ HTTPS
+             ↓
+┌─────────────────────────────────┐
+│  General Backend (Railway)      │
+│  /api/applications/*            │
+│  Shared Services:               │
+│  • Auth, LLM, Translations      │
+└─────────────────────────────────┘
+```
+
 ## Technologie-Stack
 
-### Backend
+### Backend (General Backend Repository)
 - **FastAPI** - Python Web Framework
 - **PostgreSQL** + **pgvector** - Datenbank mit Vektor-Suche
 - **SQLAlchemy** - ORM
 - **sentence-transformers** - Embedding Generation (all-MiniLM-L6-v2)
 - **PyPDF2**, **python-docx** - Dokument-Parsing
+- **Railway** - Hosting & Auto-Deploy
 
 ### Frontend
 - **React** + **TypeScript** + **Vite**
@@ -35,81 +60,38 @@ Ein intelligentes Bewerbungsmanagementsystem mit RAG-unterstütztem Chat und dyn
 
 ## Installation
 
-### Voraussetzungen
-- Python 3.11+
-- Node.js 20+
-- PostgreSQL 16+ mit pgvector Extension
-- (Optional) Ollama lokal installiert
-
-### 1. Backend Setup
+### Frontend Setup (Production)
 
 ```bash
-cd backend
-
-# Virtual Environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Dependencies
-pip install -r requirements.txt
-
-# Environment Variables
-cp .env.example .env
-# Bearbeite .env mit deinen Credentials
-```
-
-**Wichtige .env Variablen:**
-```env
-DATABASE_URL=postgresql://user:pass@localhost:5432/applicationtracker
-OLLAMA_BASE_URL=http://localhost:11434
-GROK_API_KEY=your_key  # Optional
-ANTHROPIC_API_KEY=your_key  # Optional
-```
-
-### 2. Datenbank Setup
-
-```bash
-# PostgreSQL Datenbank erstellen
-createdb applicationtracker
-
-# pgvector Extension aktivieren
-psql applicationtracker -c "CREATE EXTENSION IF NOT EXISTS vector;"
-
-# Tabellen erstellen
-python -c "from database import Base, engine; Base.metadata.create_all(bind=engine)"
-```
-
-### 3. Ollama Setup (optional, aber empfohlen)
-
-```bash
-# Ollama installieren: https://ollama.ai
-
-# Modell herunterladen
-ollama pull llama3.2:3b
-```
-
-### 4. Backend starten
-
-```bash
-uvicorn main:app --reload --port 8000
-```
-
-Backend läuft auf: http://localhost:8000
-API Docs: http://localhost:8000/docs
-
-### 5. Frontend Setup
-
-```bash
-cd ../frontend
-
-# Dependencies
+# Frontend Dependencies
+cd frontend
 npm install
 
-# Frontend starten
-npm run dev
+# Production Build
+npm run build
+
+# Deploy to Strato (siehe DEPLOYMENT_GENERAL_BACKEND.md)
+cd ..
+./deploy_frontend.sh
 ```
 
-Frontend läuft auf: http://localhost:5173
+### Backend Setup (Development)
+
+⚠️ **Das Backend liegt im separaten Repository:** https://github.com/md20210/general-backend
+
+Für lokale Entwicklung:
+```bash
+# Clone General Backend
+git clone https://github.com/md20210/general-backend.git
+cd general-backend
+
+# Setup (siehe General Backend README)
+# ...
+
+# Frontend local entwickeln
+cd /path/to/application-tracker/frontend
+npm run dev  # Nutzt .env.local (localhost:8000)
+```
 
 ## Nutzung
 
@@ -186,46 +168,51 @@ Prompt: "Nenne 3 wichtige Punkte für die Interview-Vorbereitung"
 
 ## Projekt-Struktur
 
+**Dieses Repository (Frontend + Docs):**
 ```
-applicationtracker/
-├── backend/
-│   ├── api/                    # API Endpoints
-│   │   ├── applications.py     # CRUD für Bewerbungen
-│   │   ├── upload.py          # ZIP/Dokument Upload
-│   │   ├── chat.py            # RAG Chat
-│   │   └── reports.py         # Report-Generierung
-│   ├── models/                # SQLAlchemy Models
-│   │   ├── application.py
-│   │   ├── document.py
-│   │   ├── status_history.py
-│   │   └── chat_message.py
-│   ├── services/              # Business Logic
-│   │   ├── document_parser.py # PDF/DOCX Parsing
-│   │   ├── vector_service.py  # Embeddings
-│   │   └── llm_service.py     # LLM Integration
-│   ├── database.py
-│   ├── main.py
-│   └── requirements.txt
-│
-├── frontend/
+application-tracker/
+├── frontend/                   # React Frontend
 │   ├── src/
 │   │   ├── components/
 │   │   │   └── ReportWindow.tsx
 │   │   ├── pages/
-│   │   │   ├── Overview.tsx    # Übersicht
-│   │   │   ├── Chat.tsx        # Chat-Interface
-│   │   │   └── Upload.tsx      # Upload-Seite
+│   │   │   ├── Overview.tsx   # Übersicht
+│   │   │   ├── Chat.tsx       # Chat-Interface
+│   │   │   └── Upload.tsx     # Upload-Seite
 │   │   ├── utils/
-│   │   │   └── api.ts          # API Client
+│   │   │   └── api.ts         # API Client
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   ├── package.json
 │   └── vite.config.ts
 │
+├── deploy_frontend.sh         # Deployment Script
+├── DEPLOYMENT_GENERAL_BACKEND.md
 └── README.md
 ```
 
+**General Backend Repository (Backend Code):**
+```
+general-backend/
+├── backend/
+│   ├── api/
+│   │   └── applications.py    # Application Tracker Endpoints
+│   ├── models/
+│   │   └── application.py     # SQLAlchemy Models
+│   ├── schemas/
+│   │   └── application.py     # Pydantic Schemas
+│   ├── services/
+│   │   └── application_service.py  # Document Parser
+│   └── translations/
+│       └── application.py     # UI Strings
+│
+└── alembic/versions/
+    └── 20260117_add_application_tracker.py
+```
+
 ## API Endpunkte
+
+**Base URL:** `https://general-backend-production-a734.up.railway.app`
 
 ### Applications
 - `GET /api/applications/overview` - Alle Bewerbungen mit Doc-Count
@@ -233,43 +220,41 @@ applicationtracker/
 - `PATCH /api/applications/{id}/status` - Status aktualisieren
 - `DELETE /api/applications/{id}` - Bewerbung löschen
 
-### Upload
-- `POST /api/upload/directory` - ZIP-Upload
-- `POST /api/upload/single` - Einzeldatei-Upload
-
-### Chat
-- `POST /api/chat/message` - Chat-Nachricht senden
-- `GET /api/chat/history` - Chat-Historie
-- `DELETE /api/chat/history` - Historie löschen
+### Upload & Chat
+- `POST /api/applications/upload/directory` - ZIP-Upload
+- `POST /api/applications/chat/message` - RAG Chat mit Status-Update
 
 ### Reports
-- `GET /api/reports/status` - Status-Report
-- `POST /api/reports/generate` - Custom Report generieren
-- `GET /api/reports/overview` - Übersichts-Report
+- `GET /api/applications/reports/status` - Status-Report
+- `POST /api/applications/reports/generate` - Custom Report generieren
+
+**API Dokumentation:** https://general-backend-production-a734.up.railway.app/docs
 
 ## Deployment
 
-### Railway (empfohlen)
+**Vollständige Anleitung:** [DEPLOYMENT_GENERAL_BACKEND.md](./DEPLOYMENT_GENERAL_BACKEND.md)
 
-1. PostgreSQL Datenbank erstellen
-2. pgvector Extension aktivieren
-3. Backend deployen:
-   ```bash
-   # Procfile
-   web: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-   ```
-4. Environment Variables setzen
-5. Frontend bauen und zu Strato SFTP hochladen
+### Quick Deploy
 
-### Lokal
-
+**Backend (im General Backend Repository):**
 ```bash
-# Backend
-cd backend && uvicorn main:app --port 8000
-
-# Frontend
-cd frontend && npm run dev
+cd /path/to/general-backend
+git add .
+git commit -m "Update Application Tracker"
+git push  # Railway deployt automatisch
 ```
+
+**Frontend:**
+```bash
+cd /path/to/application-tracker
+./deploy_frontend.sh
+```
+
+### Live URLs
+
+- **Frontend:** https://www.dabrock.info/applicationtracker/
+- **Backend API:** https://general-backend-production-a734.up.railway.app/api/applications/*
+- **API Docs:** https://general-backend-production-a734.up.railway.app/docs
 
 ## Verwendete Showcase-Patterns
 
@@ -292,6 +277,18 @@ Dieses Projekt nutzt bewährte Patterns aus:
 
 Privates Projekt - Alle Rechte vorbehalten
 
+## Dokumentation
+
+- **Deployment Guide:** [DEPLOYMENT_GENERAL_BACKEND.md](./DEPLOYMENT_GENERAL_BACKEND.md)
+- **Vollständige Doku:** [/docs/APPLICATION_TRACKER.md](https://github.com/md20210/CodelocalLLM/blob/master/docs/APPLICATION_TRACKER.md)
+- **API Reference:** https://general-backend-production-a734.up.railway.app/docs
+- **Spezifikation:** [CLAUDE.md](./CLAUDE.md)
+
+## Repositories
+
+- **Frontend:** https://github.com/md20210/application-tracker
+- **Backend:** https://github.com/md20210/general-backend (integriert)
+
 ## Support
 
-Bei Fragen oder Problemen: Siehe CLAUDE.md für detaillierte Spezifikation
+Bei Fragen oder Problemen, siehe Dokumentation oder öffne ein Issue auf GitHub.
