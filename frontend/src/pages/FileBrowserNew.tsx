@@ -90,6 +90,7 @@ export default function FileBrowserNew() {
   const [newName, setNewName] = useState('')
   const [draggingItem, setDraggingItem] = useState<{ type: 'file' | 'folder'; item: FileItem | FolderNode } | null>(null)
   const [dragOverNode, setDragOverNode] = useState<{ type: 'application' | 'folder'; id: number } | null>(null)
+  const [showUploadMenu, setShowUploadMenu] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const folderInputRef = useRef<HTMLInputElement>(null)
@@ -99,9 +100,12 @@ export default function FileBrowserNew() {
     loadApplications()
   }, [])
 
-  // Close context menu on click
+  // Close context menu and upload menu on click
   useEffect(() => {
-    const handleClick = () => setContextMenu(null)
+    const handleClick = () => {
+      setContextMenu(null)
+      setShowUploadMenu(false)
+    }
     document.addEventListener('click', handleClick)
     return () => document.removeEventListener('click', handleClick)
   }, [])
@@ -594,24 +598,49 @@ export default function FileBrowserNew() {
         </div>
 
         {/* Toolbar */}
-        <div className="px-3 py-2 bg-gray-50 border-b border-gray-300 flex items-center gap-2">
-          <button
-            onClick={() => folderInputRef.current?.click()}
-            disabled={!selectedNode || uploading}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            <UploadIcon className="w-4 h-4 inline mr-1" />
-            Ordner
-          </button>
+        <div className="px-3 py-2 bg-gray-50 border-b border-gray-300 flex items-center gap-2 relative">
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowUploadMenu(!showUploadMenu)
+              }}
+              disabled={!selectedNode || uploading}
+              className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              <UploadIcon className="w-4 h-4" />
+              Hochladen
+              <ChevronDown className="w-3 h-3" />
+            </button>
 
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={!selectedNode || uploading}
-            className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            <FileText className="w-4 h-4 inline mr-1" />
-            Dateien
-          </button>
+            {showUploadMenu && !uploading && selectedNode && (
+              <div
+                className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50 min-w-[160px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => {
+                    fileInputRef.current?.click()
+                    setShowUploadMenu(false)
+                  }}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 flex items-center gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Dateien auswählen
+                </button>
+                <button
+                  onClick={() => {
+                    folderInputRef.current?.click()
+                    setShowUploadMenu(false)
+                  }}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 flex items-center gap-2"
+                >
+                  <Folder className="w-4 h-4" />
+                  Ordner auswählen
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             onClick={handleCreateFolder}
