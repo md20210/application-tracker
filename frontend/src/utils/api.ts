@@ -118,14 +118,12 @@ export const listFiles = (applicationId?: number) => {
 
 // Folder Operations (Hierarchical up to 10 levels)
 export const listFolders = (applicationId: number, parentId?: number) => {
-  const params = parentId !== undefined ? { application_id: applicationId, parent_id: parentId } : { application_id: applicationId }
-  return api.get('/api/applications/folders', { params })
+  const params = parentId !== undefined ? { parent_id: parentId } : {}
+  return api.get(`/api/applications/${applicationId}/folders`, { params })
 }
 
 export const createFolder = (applicationId: number, name: string, parentId?: number) =>
-  api.post('/api/applications/folders', { name, parent_id: parentId }, {
-    params: { application_id: applicationId }
-  })
+  api.post(`/api/applications/${applicationId}/folders`, { name, parent_id: parentId })
 
 export const renameFolder = (folderId: number, newName: string) =>
   api.patch(`/api/applications/folders/${folderId}/rename`, { new_name: newName })
