@@ -95,6 +95,7 @@ export default function FileBrowserNew() {
   const [documentContent, setDocumentContent] = useState<string>('')
   const [loadingDocument, setLoadingDocument] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [renaming, setRenaming] = useState<{ type: string; id: number } | null>(null)
   const [newName, setNewName] = useState('')
   const [draggingItem, setDraggingItem] = useState<{ type: 'file' | 'folder'; item: FileItem | FolderNode } | null>(null)
@@ -290,11 +291,15 @@ export default function FileBrowserNew() {
       await loadApplications()
       if (selectedNode) {
         await selectNode(selectedNode)
-      } else {
-        // If we created a new application, select it
-        setError(`Neue Bewerbung "${companyName}" erstellt!`)
-        setTimeout(() => setError(null), 3000)
       }
+
+      // Show success message
+      if (companyName) {
+        setSuccess(`Neue Bewerbung "${companyName}" erstellt und Dateien hochgeladen!`)
+      } else {
+        setSuccess('Dateien erfolgreich hochgeladen!')
+      }
+      setTimeout(() => setSuccess(null), 3000)
     } catch (err: any) {
       setError(err.message || 'Upload failed')
     } finally {
@@ -555,8 +560,8 @@ export default function FileBrowserNew() {
     try {
       await updateFolderAttributes(selectedFolder.id, folderAttributes)
       setShowAttributesPanel(false)
-      setError('Folder-Attribute erfolgreich gespeichert')
-      setTimeout(() => setError(null), 2000)
+      setSuccess('Folder-Attribute erfolgreich gespeichert')
+      setTimeout(() => setSuccess(null), 3000)
       // Reload folders to update the displayed data
       if (selectedNode) await selectNode(selectedNode)
     } catch (err: any) {
@@ -1519,6 +1524,15 @@ export default function FileBrowserNew() {
           <AlertCircle className="w-5 h-5" />
           <span>{error}</span>
           <button onClick={() => setError(null)} className="ml-4">✕</button>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {success && (
+        <div className="fixed bottom-24 right-4 bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded shadow-lg flex items-center gap-2 z-50">
+          <Check className="w-5 h-5" />
+          <span>{success}</span>
+          <button onClick={() => setSuccess(null)} className="ml-4">✕</button>
         </div>
       )}
     </div>
